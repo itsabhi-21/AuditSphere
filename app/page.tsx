@@ -1,65 +1,215 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useEffect } from 'react';
+
+const TOOLS = [
+  { id: 'cursor', name: 'Cursor', plans: ['Hobby', 'Pro', 'Business', 'Enterprise'] },
+  { id: 'github_copilot', name: 'GitHub Copilot', plans: ['Individual', 'Business', 'Enterprise'] },
+  { id: 'claude', name: 'Claude', plans: ['Free', 'Pro', 'Max', 'Team', 'Enterprise', 'API Direct'] },
+  { id: 'chatgpt', name: 'ChatGPT', plans: ['Plus', 'Team', 'Enterprise', 'API Direct'] },
+  { id: 'anthropic_api', name: 'Anthropic API Direct', plans: ['Pay-as-you-go'] },
+  { id: 'openai_api', name: 'OpenAI API Direct', plans: ['Pay-as-you-go'] },
+  { id: 'gemini', name: 'Gemini', plans: ['Pro', 'Ultra', 'API'] },
+  { id: 'windsurf', name: 'Windsurf', plans: ['Free', 'Pro', 'Teams'] },
+];
+
+type ToolEntry = {
+  enabled: boolean;
+  plan: string;
+  monthlySpend: string;
+  seats: string;
+};
+
+type FormData = {
+  tools: Record<string, ToolEntry>;
+  teamSize: string;
+  useCase: string;
+};
+
+const defaultFormData: FormData = {
+  tools: Object.fromEntries(
+    TOOLS.map(t => [t.id, { enabled: false, plan: '', monthlySpend: '', seats: '1' }])
+  ),
+  teamSize: '',
+  useCase: '',
+};
 
 export default function Home() {
+  const [formData, setFormData] = useState<FormData>(defaultFormData);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('auditFormData');
+    if (saved) setFormData(JSON.parse(saved));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('auditFormData', JSON.stringify(formData));
+  }, [formData]);
+
+  const updateTool = (toolId: string, field: keyof ToolEntry, value: string | boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      tools: {
+        ...prev.tools,
+        [toolId]: { ...prev.tools[toolId], [field]: value },
+      },
+    }));
+  };
+
+  const handleSubmit = () => {
+    alert('Audit engine coming tomorrow!');
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="min-h-screen bg-gray-50 text-gray-900">
+
+      {/* Top nav */}
+      <nav className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="max-w-3xl mx-auto flex items-center justify-between">
+          <span className="font-bold text-xl text-violet-600">AuditSphere</span>
+          <span className="text-sm text-gray-500">Free AI Spend Audit</span>
+        </div>
+      </nav>
+
+      <div className="max-w-3xl mx-auto px-6 py-12">
+
+        {/* Hero */}
+        <div className="mb-10 text-center">
+          <h1 className="text-4xl font-bold text-gray-900 mb-3 leading-tight">
+            Are you overpaying for<br />AI tools?
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-gray-500 text-lg max-w-xl mx-auto">
+            Enter your current AI subscriptions and get an instant audit — what to cut, what to switch, and how much you&apos;ll save.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* Team Info Card */}
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-5 shadow-sm">
+          <h2 className="text-gray-900 font-semibold text-base mb-4">Tell us about your team</h2>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-gray-600 text-sm mb-1.5 block font-medium">Team Size</label>
+              <input
+                type="number"
+                min={1}
+                step={1}
+                placeholder="e.g. 5"
+                className="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                value={formData.teamSize}
+                onChange={e => setFormData(prev => ({ ...prev, teamSize: e.target.value }))}
+              />
+            </div>
+            <div>
+              <label className="text-gray-600 text-sm mb-1.5 block font-medium">Primary Use Case</label>
+              <select
+                className="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                value={formData.useCase}
+                onChange={e => setFormData(prev => ({ ...prev, useCase: e.target.value }))}
+              >
+                <option value="">Select use case</option>
+                <option value="coding">Coding</option>
+                <option value="writing">Writing</option>
+                <option value="data">Data</option>
+                <option value="research">Research</option>
+                <option value="mixed">Mixed</option>
+              </select>
+            </div>
+          </div>
         </div>
-      </main>
-    </div>
+
+        {/* Tools Section */}
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-6 shadow-sm">
+          <h2 className="text-gray-900 font-semibold text-base mb-1">
+            Which AI tools do you pay for?
+          </h2>
+          <p className="text-gray-400 text-sm mb-5">Check all that apply and fill in your current spend.</p>
+
+          <div className="space-y-3">
+            {TOOLS.map(tool => {
+              const entry = formData.tools[tool.id];
+              return (
+                <div
+                  key={tool.id}
+                  className={`border rounded-xl p-4 transition-all cursor-pointer ${
+                    entry.enabled
+                      ? 'border-violet-300 bg-violet-50'
+                      : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      id={tool.id}
+                      checked={entry.enabled}
+                      onChange={e => updateTool(tool.id, 'enabled', e.target.checked)}
+                      className="w-4 h-4 accent-violet-600 cursor-pointer"
+                    />
+                    <label htmlFor={tool.id} className="text-gray-900 font-medium cursor-pointer select-none">
+                      {tool.name}
+                    </label>
+                    {entry.enabled && entry.monthlySpend && (
+                      <span className="ml-auto text-sm text-violet-600 font-semibold">
+                        ${entry.monthlySpend}/mo
+                      </span>
+                    )}
+                  </div>
+
+                  {entry.enabled && (
+                    <div className="grid grid-cols-3 gap-3 mt-4">
+                      <div>
+                        <label className="text-gray-500 text-xs mb-1 block">Plan</label>
+                        <select
+                          className="w-full bg-white border border-gray-300 text-gray-900 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                          value={entry.plan}
+                          onChange={e => updateTool(tool.id, 'plan', e.target.value)}
+                        >
+                          <option value="">Select</option>
+                          {tool.plans.map(p => (
+                            <option key={p} value={p.toLowerCase()}>{p}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-gray-500 text-xs mb-1 block">Monthly Spend ($)</label>
+                        <input
+                          type="number"
+                          placeholder="0"
+                          className="w-full bg-white border border-gray-300 text-gray-900 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                          value={entry.monthlySpend}
+                          onChange={e => updateTool(tool.id, 'monthlySpend', e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label className="text-gray-500 text-xs mb-1 block">Seats</label>
+                        <input
+                          type="number"
+                          placeholder="1"
+                          className="w-full bg-white border border-gray-300 text-gray-900 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                          value={entry.seats}
+                          onChange={e => updateTool(tool.id, 'seats', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Submit */}
+        <button
+          onClick={handleSubmit}
+          className="w-full bg-violet-600 hover:bg-violet-700 active:bg-violet-800 text-white font-semibold py-4 rounded-xl text-lg transition-colors shadow-sm"
+        >
+          Get My Free Audit →
+        </button>
+
+        <p className="text-center text-gray-400 text-sm mt-4">
+          No email required to see your results.
+        </p>
+
+      </div>
+    </main>
   );
 }
