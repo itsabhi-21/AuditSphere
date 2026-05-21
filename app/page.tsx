@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import {supabase} from '../lib/supabase';
 
 const TOOLS = [
   { id: 'cursor', name: 'Cursor', plans: ['Hobby', 'Pro', 'Business', 'Enterprise'] },
@@ -56,8 +57,21 @@ export default function Home() {
     }));
   };
 
-  const handleSubmit = () => {
-    alert('Audit engine coming tomorrow!');
+  const handleSubmit = async () => {
+    const { error } = await supabase.from('audits').insert([
+      {
+        team_size: Number(formData.teamSize),
+        use_case: formData.useCase,
+        tools: formData.tools,
+      },
+    ]);
+
+    if (error) {
+      console.error(error);
+      alert('Error saving data');
+    } else {
+      alert('Data saved!');
+    }
   };
 
   return (
