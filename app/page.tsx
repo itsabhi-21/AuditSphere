@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import {supabase} from '../lib/supabase';
+import { useRouter } from 'next/navigation';
+import { runAudit, type ToolInput } from '@/lib/auditEngine';
+
 
 const TOOLS = [
   { id: 'cursor', name: 'Cursor', plans: ['Hobby', 'Pro', 'Business', 'Enterprise'] },
@@ -36,6 +39,7 @@ const defaultFormData: FormData = {
 };
 
 export default function Home() {
+  const router = useRouter();
   const [formData, setFormData] = useState<FormData>(defaultFormData);
 
   useEffect(() => {
@@ -57,21 +61,26 @@ export default function Home() {
     }));
   };
 
-  const handleSubmit = async () => {
-    const { error } = await supabase.from('audits').insert([
-      {
-        team_size: Number(formData.teamSize),
-        use_case: formData.useCase,
-        tools: formData.tools,
-      },
-    ]);
+  const handleSubmit = () => {
+    const activeTools: ToolInput[] = Object.entries(formData.tools)
+      .filter(([, v]) => v.enabled)
+      .map(([id, v]) => ({
+        id,
+        plan: v.plan,
+        monthlySpend: parseFloat(v.monthlySpend) || 0,
+        seats: parseInt(v.seats) || 1,
+      }));
 
-    if (error) {
-      console.error(error);
-      alert('Error saving data');
-    } else {
-      alert('Data saved!');
+    if (activeTools.length === 0) {
+      alert('Please select at least one tool.');
+      return;
     }
+
+    const auditResult = runAudit(activeTools);
+    // Store result and navigate to results page
+    localStorage.setItem('auditResult', JSON.stringify(auditResult));
+    localStorage.setItem('auditMeta', JSON.stringify({ teamSize: formData.teamSize, useCase: formData.useCase }));
+    router.push('/results');
   };
 
   return (
