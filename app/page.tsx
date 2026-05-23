@@ -61,7 +61,7 @@ export default function Home() {
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const activeTools: ToolInput[] = Object.entries(formData.tools)
       .filter(([, v]) => v.enabled)
       .map(([id, v]) => ({
@@ -77,9 +77,34 @@ export default function Home() {
     }
 
     const auditResult = runAudit(activeTools);
-    // Store result and navigate to results page
+
+    // Save to Supabase in background
+    try {
+      const res = await fetch('/api/audit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tools: activeTools,
+          teamSize: formData.teamSize,
+          useCase: formData.useCase,
+          totalMonthlySavings: auditResult.totalMonthlySavings,
+          totalAnnualSavings: auditResult.totalAnnualSavings,
+        }),
+      });
+      const data = await res.json();
+      if (data.auditId) {
+        localStorage.setItem('auditId', data.auditId);
+      }
+    } catch (e) {
+      console.error('Failed to save audit:', e);
+      // Don't block the user — continue anyway
+    }
+
     localStorage.setItem('auditResult', JSON.stringify(auditResult));
-    localStorage.setItem('auditMeta', JSON.stringify({ teamSize: formData.teamSize, useCase: formData.useCase }));
+    localStorage.setItem('auditMeta', JSON.stringify({
+      teamSize: formData.teamSize,
+      useCase: formData.useCase
+    }));
     router.push('/results');
   };
 
