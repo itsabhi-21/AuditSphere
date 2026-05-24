@@ -26,6 +26,116 @@ export default function ResultsPage() {
     </div>
   );
 
+
+
+  function LeadCaptureForm({ auditId, isOptimal }: { auditId: string | null; isOptimal: boolean }) {
+  const [email, setEmail] = useState('');
+  const [company, setCompany] = useState('');
+  const [role, setRole] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  const handleSubmit = async () => {
+    if (!email) return;
+    setStatus('loading');
+
+    try {
+      const res = await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          companyName: company,
+          role,
+          auditId,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setStatus('success');
+      } else {
+        setStatus('error');
+      }
+    } catch {
+      setStatus('error');
+    }
+  };
+
+  if (status === 'success') {
+    return (
+      <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center">
+        <div className="text-2xl mb-2">✅</div>
+        <h3 className="font-semibold text-green-800 mb-1">Report sent!</h3>
+        <p className="text-green-700 text-sm">
+          Check your inbox. We&apos;ll notify you when new savings apply to your stack.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+      <h3 className="font-semibold text-gray-900 mb-1">
+        {isOptimal
+          ? 'Get notified when new optimizations apply to your stack'
+          : 'Get this report in your inbox'}
+      </h3>
+      <p className="text-gray-500 text-sm mb-4">
+        No spam. We&apos;ll flag new savings opportunities as they appear.
+      </p>
+
+      {/* Honeypot field — hidden, catches bots */}
+      <input
+        type="text"
+        name="website"
+        className="hidden"
+        tabIndex={-1}
+        autoComplete="off"
+      />
+
+      <div className="space-y-3">
+        <input
+          type="email"
+          placeholder="you@company.com *"
+          className="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+        />
+        <div className="grid grid-cols-2 gap-3">
+          <input
+            type="text"
+            placeholder="Company name (optional)"
+            className="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+            value={company}
+            onChange={e => setCompany(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Your role (optional)"
+            className="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+            value={role}
+            onChange={e => setRole(e.target.value)}
+          />
+        </div>
+
+        <button
+          onClick={handleSubmit}
+          disabled={status === 'loading' || !email}
+          className="w-full bg-violet-600 hover:bg-violet-700 disabled:bg-violet-300 text-white font-semibold py-3 rounded-lg text-sm transition-colors"
+        >
+          {status === 'loading' ? 'Sending...' : 'Send My Report →'}
+        </button>
+
+        {status === 'error' && (
+          <p className="text-red-500 text-sm text-center">
+            Something went wrong. Please try again.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
   return (
     <main className="min-h-screen bg-gray-50">
 
@@ -140,26 +250,7 @@ export default function ResultsPage() {
         </div>
 
         {/* Lead capture */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-          <h3 className="font-semibold text-gray-900 mb-1">
-            {audit.isOptimal
-              ? 'Get notified when new optimizations apply to your stack'
-              : 'Get this report in your inbox'}
-          </h3>
-          <p className="text-gray-500 text-sm mb-4">
-            We&apos;ll send you a copy and flag new savings opportunities as they appear.
-          </p>
-          <div className="flex gap-3">
-            <input
-              type="email"
-              placeholder="you@company.com"
-              className="flex-1 bg-gray-50 border border-gray-300 text-gray-900 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-            />
-            <button className="bg-violet-600 hover:bg-violet-700 text-white font-semibold px-5 py-2.5 rounded-lg text-sm transition-colors">
-              Send Report
-            </button>
-          </div>
-        </div>
+          <LeadCaptureForm auditId={localStorage.getItem('auditId')} isOptimal={audit.isOptimal} />
 
       </div>
     </main>
