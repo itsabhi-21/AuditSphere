@@ -11,6 +11,7 @@ function LeadCaptureForm({ auditId, isOptimal }: { auditId: string | null; isOpt
   const [company, setCompany] = useState('');
   const [role, setRole] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
   
 
   const handleSubmit = async () => {
@@ -137,9 +138,13 @@ export default function ResultsPage() {
     const savedMeta = localStorage.getItem('auditMeta');
     const savedAuditId = localStorage.getItem('auditId');
 
+
     if (!savedAudit) {
       router.push('/');
       return;
+    }
+    if (savedAuditId) {
+      setShareUrl(`${window.location.origin}/audit/${savedAuditId}`);
     }
     if (savedAuditId) {
       setAuditId(savedAuditId);

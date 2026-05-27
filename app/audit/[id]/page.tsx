@@ -63,8 +63,6 @@ export default function PublicAuditPage() {
       </nav>
 
       <div className="max-w-3xl mx-auto px-6 py-12">
-
-        {/* Hero */}
         <div className={`rounded-2xl p-8 mb-8 text-center ${
           audit.total_monthly_savings > 0 ? 'bg-violet-600' : 'bg-green-50 border border-green-200'
         }`}>
@@ -92,27 +90,7 @@ export default function PublicAuditPage() {
             </>
           )}
         </div>
-        
 
-
-        {shareUrl && (
-        <div className="bg-white border border-gray-200 rounded-2xl p-4 mb-8 shadow-sm flex items-center justify-between gap-4">
-            <div>
-            <p className="text-sm font-medium text-gray-900">Share this audit</p>
-            <p className="text-xs text-gray-400 truncate max-w-xs">{shareUrl}</p>
-            </div>
-            <button
-            onClick={() => {
-                navigator.clipboard.writeText(shareUrl);
-                alert('Link copied!');
-            }}
-            className="bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold px-4 py-2 rounded-lg whitespace-nowrap transition-colors"
-            >
-            Copy Link
-            </button>
-        </div>
-        )}
-        {/* CTA */}
         <div className="bg-white border border-violet-200 rounded-2xl p-6 text-center shadow-sm">
           <h2 className="font-bold text-gray-900 text-lg mb-2">
             Want to audit your own AI stack?
@@ -120,14 +98,10 @@ export default function PublicAuditPage() {
           <p className="text-gray-500 text-sm mb-4">
             Free, instant, no signup required.
           </p>
-          <a
-            href="/"
-            className="inline-block bg-violet-600 hover:bg-violet-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors"
-          >
+          <a href="/" className="inline-block bg-violet-600 hover:bg-violet-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors">
             Get My Free Audit →
           </a>
         </div>
-
       </div>
     </main>
   );
