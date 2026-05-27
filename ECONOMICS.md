@@ -1,4 +1,3 @@
-# Economics
 
 ## What is a converted lead worth to Credex?
 

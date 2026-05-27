@@ -1,4 +1,3 @@
-# Reflection
 
 ## 1. Hardest bug this week
 

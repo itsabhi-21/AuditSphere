@@ -1,4 +1,3 @@
-# Pricing Data
 
 All prices verified during submission week (May 2026).
 

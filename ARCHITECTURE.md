@@ -1,4 +1,3 @@
-# Architecture
 
 ## System Diagram
 

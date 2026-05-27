@@ -1,4 +1,3 @@
-# Metrics
 
 ## North Star Metric
 

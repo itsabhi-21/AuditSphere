@@ -1,4 +1,3 @@
-# Landing Copy
 
 ## Hero Headline
 **Are you overpaying for AI tools?**
