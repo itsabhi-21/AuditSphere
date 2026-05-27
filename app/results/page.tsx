@@ -11,6 +11,7 @@ function LeadCaptureForm({ auditId, isOptimal }: { auditId: string | null; isOpt
   const [company, setCompany] = useState('');
   const [role, setRole] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  
 
   const handleSubmit = async () => {
     if (!email) return;
@@ -129,6 +130,7 @@ export default function ResultsPage() {
   const [summary, setSummary] = useState<string | null>(null);
   const [summaryLoading, setSummaryLoading] = useState(false);
   const [auditId, setAuditId] = useState<string | null>(null);
+  const [shareUrl, setShareUrl] = useState<string | null>(null)
 
   useEffect(() => {
     const savedAudit = localStorage.getItem('auditResult');
@@ -139,7 +141,10 @@ export default function ResultsPage() {
       router.push('/');
       return;
     }
-
+    if (savedAuditId) {
+      setAuditId(savedAuditId);
+      setShareUrl(`${window.location.origin}/audit/${savedAuditId}`);
+    }
     const auditData: AuditSummary = JSON.parse(savedAudit);
     setAudit(auditData);
     if (savedMeta) setMeta(JSON.parse(savedMeta));
@@ -220,6 +225,25 @@ export default function ResultsPage() {
             </>
           )}
         </div>
+        
+
+        {shareUrl && (
+          <div className="bg-white border border-gray-200 rounded-2xl p-4 mb-8 shadow-sm flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-medium text-gray-900">Share this audit</p>
+              <p className="text-xs text-gray-400 truncate max-w-xs">{shareUrl}</p>
+            </div>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(shareUrl);
+                alert('Link copied!');
+              }}
+              className="bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold px-4 py-2 rounded-lg whitespace-nowrap transition-colors"
+            >
+              Copy Link
+            </button>
+          </div>
+        )}
 
         {/* Credex CTA — only for high savings */}
         {audit.showCredex && (
