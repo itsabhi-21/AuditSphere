@@ -4,15 +4,6 @@ AuditSphere helps startup founders and engineering managers find out exactly whe
 
 **Live URL:** https://audit-sphere-seven.vercel.app
 
----
-
-## Screenshots
-
-> [Add 3 screenshots here — homepage, results page with savings, share URL]
-> Or add a Loom recording link: https://loom.com/...
-
----
-
 ## Quick Start
 
 ### Run locally
@@ -23,7 +14,7 @@ cd AuditSphere
 npm install
 ```
 
-Create `.env.local`:
+Create `.env`:
 ```
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
